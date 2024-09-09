@@ -34,14 +34,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
 
-    Route::group(['prefix' => '/permissions'], function () {
-        Route::get('role-by-permission/{permissionID}', [PermissionController::class,'getRolesByPermission']);
-        Route::post('assign-permissions-to-role', [PermissionController::class, 'assignPermissionsToRole']);
-        Route::delete('remove-permissions-from-role', [PermissionController::class, 'removePermissionsFromRole']);
-        
+    Route::group(['prefix' => '/permissions'], function () {  
         Route::get('show-all', [PermissionController::class, 'getAllPermissions']);
         Route::post('create', [PermissionController::class, 'createPermission']);
         Route::put('update-permission-name', [PermissionController::class, 'updatePermissionName']);
         Route::delete('delete/{permissionID}', [PermissionController::class, 'deletePermission']);
+
+        Route::post('assign-permissions-to-role', [PermissionController::class, 'assignPermissionsToRole']);
+        Route::delete('delete-permission-from-role', [PermissionController::class,'removePermissionFromRole']);
     });
 }); 

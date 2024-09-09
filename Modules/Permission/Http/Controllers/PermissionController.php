@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Permission\Http\Requests\Permission\assignPermissionToRoleRequest;
 use Modules\Permission\Http\Requests\Permission\CreatePermissionRequest;
+use Modules\Permission\Http\Requests\Role\RemovePermissionFromRoleRequest;
 use Modules\Permission\Http\Requests\Role\UpdatePermissionRequest;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -26,20 +27,26 @@ class PermissionController extends ApiController
 
         $role->givePermissionTo($permissions);
 
-        return $this->respondSuccess('دسترسی با موفقیت اضافه شد', []);
+        return $this->respondSuccess('دسترسی با موفقیت اضافه شد', []); // ست کردن خروجی درست 
     }
 
 
         // حذف یک دسترسی از نقش
-    public function removePermissionsFromRole($roleId, array $permissionIds)
+    public function removePermissionFromRole(RemovePermissionFromRoleRequest $request)
     {
+        $roleId = $request->input('role_id');
+        $permissionId = $request->input('permission_id');
+
         $role = Role::findOrFail($roleId);
+        $permission = Permission::findOrFail($permissionId);
 
-        $permissions = Permission::whereIn('id', $permissionIds)->get();
+        $role->revokePermissionTo($permission);
 
-        $role->revokePermissionTo($permissions);
-
-        return $this->respondSuccess('دسترسی با موفقست از نقش حذف شد', []);
+        return response()->json([
+            'message' => 'دسترسی با موفقیت از نقش مورد نظر پاک شد',
+            'role' => $role,
+            'permission' => $permission
+        ]);
     }
 
 
@@ -87,9 +94,6 @@ class PermissionController extends ApiController
         $permission->name = $newName;
         $permission->save();
 
-        return response()->json([
-            'message' => 'نام دسترسی با موفقیت به‌روزرسانی شد',
-            'permission' => $permission
-        ]);
+        return $this->respondSuccess('دسترسی با موفقیت ابدیت شد', $permission);
     }
 }
