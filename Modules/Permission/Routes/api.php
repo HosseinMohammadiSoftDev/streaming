@@ -30,6 +30,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::delete('delete-role/{roleID}', [RoleController::class, 'deleteRole']);
 
         Route::post('assign-role-to-user', [RoleController::class, 'assignRoleToUser']);
+        Route::delete('delete-role-from-user', [RoleController::class, 'removeRoleFromUser']);
     });
 
 

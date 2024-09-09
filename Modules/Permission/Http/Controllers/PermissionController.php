@@ -2,78 +2,76 @@
 
 namespace Modules\Permission\Http\Controllers;
 
+use App\Http\Controllers\Contract\ApiController;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Permission\Http\Requests\Permission\CreatePermissionRequest;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Modules\Permission\Http\Requests\Permission\assignPermissionToRoleRequest;
 
-class PermissionController extends Controller
+class PermissionController extends ApiController
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index()
+         // اضافه کردن یک دسترسی به نقش 
+    public function assignPermissionsToRole(assignPermissionToRoleRequest $request)
     {
-        return view('permission::index');
+        $roleId = $request->json('role_id');
+        $permissionIds = $request->json('permission_id');
+        $permissionIds;
+        $role = Role::findOrFail($roleId);
+
+        $permissions = Permission::whereIn('id', $permissionIds)->get();
+
+        $role->givePermissionTo($permissions);
+
+        return $this->respondSuccess('دسترسی با موفقیت اضافه شد', []);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+
+        // حذف یک دسترسی از نقش
+    public function removePermissionsFromRole($roleId, array $permissionIds)
     {
-        return view('permission::create');
+        $role = Role::findOrFail($roleId);
+
+        $permissions = Permission::whereIn('id', $permissionIds)->get();
+
+        $role->revokePermissionTo($permissions);
+
+        return $this->respondSuccess('دسترسی با موفقست از نقش حذف شد', []);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
+
+
+    public function getAllPermissions(Request $request)
     {
-        //
+        $paginate = $request->input('paginate') ?? 10;
+
+        $permissions = Permission::simplePaginate($paginate);
+
+        return $this->respondSuccess('دسترسی ها با موفقیت نمایش پیدا کردند', $permissions);
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
+
+
+
+        // ساختن دسترسی 
+    public function createPermission(CreatePermissionRequest $request)
     {
-        return view('permission::show');
+        $permissionName = $request->input('name');
+        $permission = Permission::create(['name' => $permissionName, 'guard_name' => 'api']);
+
+        return $this->respondSuccess('دسترسی با موفقیت ساخته شد.', $permission);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('permission::edit');
-    }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
+        // حذف دسترسی
+    public function deletePermission($permissionId)
     {
-        //
-    }
+        $permission = Permission::findOrFail($permissionId);
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        $permission->delete();
+
+        return $this->respondSuccess('دسترسی با موفقیت حذف شد.', $permission);
     }
 }

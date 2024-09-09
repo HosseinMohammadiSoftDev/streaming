@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller;
 use Modules\Permission\Entities\Role;
 use Modules\Permission\Http\Requests\Role\AssignRoleToUserRequeste;
 use Modules\Permission\Http\Requests\Role\CreateRoleRequest;
+use Modules\Permission\Http\Requests\Role\RemoveRoleFromUserRequest;
 use Modules\Permission\Http\Requests\Role\UpdateRoleRequest;
 use Modules\Permission\Transformers\User\UserResource;
 
@@ -35,7 +36,7 @@ class RoleController extends ApiController
         ]);
     }
 
-    
+
     public function getUserRoles($userId)
     {
         $user = User::findOrFail($userId);
@@ -82,9 +83,25 @@ class RoleController extends ApiController
 
         $user = User::findOrFail($userId);
         $role = Role::findOrFail($roleId);
-// dd($user);
         $user->assignRole($role);
 
         return $this->respondSuccess('نقش با موفقیت به کاربر مورد نظر اضافه گردید', $user);
+    }
+
+
+     public function removeRoleFromUser(RemoveRoleFromUserRequest $request)
+    {
+        $userId = $request->input('user_id');
+        $roleId = $request->input('role_id');
+
+        $user = User::findOrFail($userId);
+        $role = Role::findOrFail($roleId);
+
+        $user->removeRole($role);
+
+        return response()->json([
+            'message' => 'نقش با موفقیت از کاربر مورد نظر حذف شد',
+            'user' => $user
+        ]);
     }
 }
