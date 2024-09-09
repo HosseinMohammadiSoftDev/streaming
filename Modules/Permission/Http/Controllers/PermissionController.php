@@ -6,10 +6,11 @@ use App\Http\Controllers\Contract\ApiController;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Permission\Http\Requests\Permission\assignPermissionToRoleRequest;
 use Modules\Permission\Http\Requests\Permission\CreatePermissionRequest;
+use Modules\Permission\Http\Requests\Role\UpdatePermissionRequest;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Modules\Permission\Http\Requests\Permission\assignPermissionToRoleRequest;
 
 class PermissionController extends ApiController
 {
@@ -59,7 +60,7 @@ class PermissionController extends ApiController
     public function createPermission(CreatePermissionRequest $request)
     {
         $permissionName = $request->input('name');
-        $permission = Permission::create(['name' => $permissionName, 'guard_name' => 'api']);
+        $permission = Permission::create(['name' => $permissionName]);
 
         return $this->respondSuccess('دسترسی با موفقیت ساخته شد.', $permission);
     }
@@ -73,5 +74,22 @@ class PermissionController extends ApiController
         $permission->delete();
 
         return $this->respondSuccess('دسترسی با موفقیت حذف شد.', $permission);
+    }
+
+
+            // ابدیت نام دسترسی
+     public function updatePermissionName(UpdatePermissionRequest $request)
+    {
+        $permissionId = $request->input('permission_id');
+        $newName = $request->input('name');
+
+        $permission = Permission::findOrFail($permissionId);
+        $permission->name = $newName;
+        $permission->save();
+
+        return response()->json([
+            'message' => 'نام دسترسی با موفقیت به‌روزرسانی شد',
+            'permission' => $permission
+        ]);
     }
 }

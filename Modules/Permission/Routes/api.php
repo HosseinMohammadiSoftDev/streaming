@@ -41,6 +41,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         
         Route::get('show-all', [PermissionController::class, 'getAllPermissions']);
         Route::post('create', [PermissionController::class, 'createPermission']);
+        Route::put('update-permission-name', [PermissionController::class, 'updatePermissionName']);
         Route::delete('delete/{permissionID}', [PermissionController::class, 'deletePermission']);
     });
 }); 
