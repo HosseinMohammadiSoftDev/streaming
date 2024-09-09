@@ -2,78 +2,137 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Modules\Auth\Http\Requests\User\RegisterUserRequest;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
-    public function index()
+       public function register(RegisterUserRequest $request)
     {
-        return view('auth::index');
+        $validated = $request->validated();
+      try {
+            $userId = User::max('id') + 1;
+
+            if ($request->hasFile('image')) {
+                $imageName = $this->storePhoto($request->file('image'), $userId);
+                $validated['image'] = $imageName;
+            }
+
+            $validated['password'] = Hash::make($validated['password']);
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => $validated['password'],
+                'image' => $validated['image'] ?? null,
+            ]);
+
+            $token = $user->createToken('Personal Access Token')->plainTextToken;
+
+            return $this->respondCreated('کاربر با موفقیت ایجاد شد', [
+                'user' => $user,
+                'token' => $token,
+            ]);
+
+      } catch (\Exception $e) {
+          return $this->respondInternalError('(ایمیل باید یونیک باشد):خطایی در ایجاد کاربر رخ داده است');
+      }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+
+
+        public function login(Request $request)
     {
-        return view('auth::create');
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'اطلاعات ورود اشتباه است'], 401);
+        }
+
+        $token = $user->createToken('Personal Access Token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'ورود موفقیت‌آمیز',
+            'user' => $user,
+            'token' => $token,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
+
+
+    public function logout()
     {
-        //
+        try {
+            $user = auth()->user();
+
+            if (!$user) {
+                return $this->respondNotFound('کاربر یافت نشد');
+            }
+
+            $user->currentAccessToken()->delete();
+
+            return $this->respondSuccess('کاربر با موفقیت لاگ‌اوت شد', null);
+        } catch (\Exception $e) {
+            return $this->respondInternalError('خطایی در خروج از حساب کاربری رخ داده است');
+        }
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
+
+    public function deleteUser()
     {
-        return view('auth::show');
+        try {
+            $user = auth()->user();
+
+            if (!$user) {
+                return $this->respondNotFound('کاربر یافت نشد');
+            }
+
+            $this->deleteUserPhotos($user);
+            $user->tokens()->delete();
+            $user->delete();
+
+            return $this->respondSuccess('کاربر و تمام اطلاعات مربوط به او با موفقیت حذف شد', null);
+        } catch (\Exception $e) {
+            return $this->respondInternalError('خطایی در حذف کاربر رخ داده است');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
+
+    // image User Profile
+    protected function storePhoto($file, $userId)
     {
-        return view('auth::edit');
+        $imageName = time() . rand(100, 10000) . '.' . $file->getClientOriginalExtension();
+        $userFolderPath = public_path('images/UserProfile/' . $userId);
+
+        if (!File::exists($userFolderPath)) {
+            File::makeDirectory($userFolderPath, 0755, true);
+        }
+
+        $file->move($userFolderPath, $imageName);
+        return $imageName;
     }
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
+    protected function deleteUserPhotos(User $user)
     {
-        //
+        $userFolderPath = public_path('images/UserProfile/' . $user->id);
+
+        if (File::exists($userFolderPath)) {
+            File::deleteDirectory($userFolderPath);
+        }
     }
 }
