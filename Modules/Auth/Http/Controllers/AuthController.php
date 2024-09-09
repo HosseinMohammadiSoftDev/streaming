@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Http\Controllers\Contract\ApiController;
 use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Modules\Auth\Http\Requests\User\RegisterUserRequest;
 
-class AuthController extends Controller
+class AuthController extends ApiController
 {
        public function register(RegisterUserRequest $request)
     {

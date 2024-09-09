@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Http\Controllers\Contract\ApiController;
 use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Modules\Auth\Http\Requests\User\UpdateUserRequest;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
    public function index(Request $request)
     {

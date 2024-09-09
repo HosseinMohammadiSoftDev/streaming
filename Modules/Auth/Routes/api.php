@@ -1,6 +1,12 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Modules\Auth\Http\Controllers\AuthController;
+use Modules\Auth\Http\Controllers\UserController;
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +19,24 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/auth', function (Request $request) {
-    return $request->user();
+Route::fallback(function(){
+    return response()->json('ادرس درست وارد نشده است');
+});
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::delete('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::delete('/delete_user', [AuthController::class, 'deleteUser'])->middleware('auth:sanctum');
+
+// Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail']);
+// Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']);
+
+Route::get('/users', [UserController::class, 'index']);
+
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::group(['prefix' => '/users'], function () {
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::put('/{id}', [UserController::class, 'update']);
+    });
 });
