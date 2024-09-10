@@ -19,7 +19,6 @@ class FileController extends ApiController
     public function __construct(Uploader $uploader)
     {
         $this->uploader = $uploader;
-
     }
 
 
@@ -32,22 +31,19 @@ class FileController extends ApiController
 
     public function show(File $file)
     {
-        dd($file);
+        // dd('donwload');
         return $file->download();
     }
 
     public function delete(File $file)
     {
-        dd('test');
         $file->delete();
 
         return $this->respondSuccess('فایل با موفقیت حذف شد.', $file);
     }
 
-
     public function new(FileUploadFileRequest $request)
     {
-        // dd($request);
         // try{
             $request->validated();
 
@@ -57,8 +53,6 @@ class FileController extends ApiController
         // }catch(\Exception $e){
         //     return $this->respondInternalError('در مسیر به مشکلی بر خوردیم');
         // }
-
-
     }
 
 }

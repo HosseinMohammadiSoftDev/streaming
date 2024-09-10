@@ -17,11 +17,12 @@ class Uploader
 
     public function __construct(Request $request, StorgeManager $storageManager, FFMpegService $ffmpeg)
     {
+        // dd($request->file);
+        // dd($storageManager);
         $this->request = $request;
         $this->storageManager = $storageManager;
         $this->file = $request->file;
         $this->ffmpeg = $ffmpeg;
-
     }
 
 

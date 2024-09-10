@@ -24,8 +24,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => '/file'], function () {
         Route::get('show-all', [FileController::class, 'index']);
         Route::post('upload', [FileController::class, 'new']);
-        Route::get('download/{fileID}', [FileController::class, 'show']);
-        Route::get('delete', [FileController::class, 'delete']);
+        Route::get('download/{file}', [FileController::class, 'show']);
+        Route::delete('delete/{file}', [FileController::class, 'delete']);
     });
 });
 

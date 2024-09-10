@@ -30,6 +30,9 @@ class File extends Model
 
     public function download()
     {
+        // dd('mothed download');
+        // dd(resolve(StorgeManager::class)->getFile());
+        // dd($this->is_private);
         return resolve(StorgeManager::class)->getFile($this->name, $this->type, $this->is_private);
     }
 
