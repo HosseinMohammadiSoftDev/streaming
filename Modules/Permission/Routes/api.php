@@ -18,6 +18,11 @@ use Modules\Permission\Http\Controllers\RoleController;
 |
 */
 
+Route::fallback(function(){
+    return response()->json('ادرس درست وارد نشده است');
+});
+
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => '/roles'], function () {
         Route::group(['prefix' => '/show'], function () {

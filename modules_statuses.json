@@ -1,4 +1,5 @@
 {
     "Auth": true,
-    "Permission": true
+    "Permission": true,
+    "Straem": true
 }

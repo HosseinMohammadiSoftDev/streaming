@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    
+    'ffmpeg' => [
+        'ffprobe_path' => env('FFPROBE_PATH')
+    ]
+
 ];

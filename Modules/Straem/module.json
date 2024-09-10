@@ -1,0 +1,11 @@
+{
+    "name": "Straem",
+    "alias": "straem",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Straem\\Providers\\StraemServiceProvider"
+    ],
+    "files": []
+}

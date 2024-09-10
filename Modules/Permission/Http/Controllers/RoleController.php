@@ -12,65 +12,94 @@ use Modules\Permission\Http\Requests\Role\AssignRoleToUserRequeste;
 use Modules\Permission\Http\Requests\Role\CreateRoleRequest;
 use Modules\Permission\Http\Requests\Role\RemoveRoleFromUserRequest;
 use Modules\Permission\Http\Requests\Role\UpdateRoleRequest;
+use Modules\Permission\Transformers\Role\RoleDetailsnResource;
+use Modules\Permission\Transformers\Role\RoleResource;
 use Modules\Permission\Transformers\User\UserResource;
 
 class RoleController extends ApiController
 {
     
             // crud roles
-    public function getAllRoles()
+    public function getAllRoles(Request $request)
     {
-        $roles = Role::with(['permissions'])->get();
-        return $this->respondSuccess('نقش ها باموفقیت دریافت شدند.', $roles);
+         try {
+
+            $roles = Role::with('permissions')->get();
+
+            return $this->respondSuccess('نقش‌ها با موفقیت دریافت شدند.', RoleResource::collection($roles));
+         } catch (\Throwable $th) {
+            return $this->respondInternalError('خطایی درخ داده است');
+        }
     }
+    
 
-
-     public function getRoleDetails($roleId)
+    public function getRoleDetails($roleId)
      {
-        $role = Role::with(['permissions', 'users'])->findOrFail($roleId);
+        try {  
 
-        return $this->respondSuccess('جزعیات نقش با موفقیت دریافت شد', [
-            'role' => $role->name,
-            'permissions' => $role->permissions->pluck('name'),
-            'users' => $role->users->pluck('name'),
-        ]);
+            $role = Role::with(['permissions', 'users'])->findOrFail($roleId);
+
+            return $this->respondSuccess('جزئیات نقش با موفقیت دریافت شد.', new RoleDetailsnResource($role));
+        } catch (\Throwable $th) {
+            return $this->respondInternalError('{اطمینان حاصل کنید ورودی درست است}:خطایی درخ داده است');
+        }
     }
 
 
     public function getUserRoles($userId)
-    {
-        $user = User::findOrFail($userId);
+    { 
+    try {
+            $user = User::findOrFail($userId);
 
-        return $this->respondSuccess('مقام ها و دسترسی ها کاربر با موفقیت پیدا شد.', new UserResource($user));
+            return $this->respondSuccess('مقام ها و دسترسی ها کاربر با موفقیت پیدا شد.', new UserResource($user));
+        } catch (\Throwable $th) {
+            return $this->respondInternalError('{اطمینان حاصل کنید ورودی درست است}:خطایی درخ داده است');
+        }
     }
 
     
     public function createRole(CreateRoleRequest $request)
     {
-        $roleName = $request->input('name');
-        $roleCrate = Role::create(['name' => $roleName]);
-        return $this->respondSuccess('نقش با موفقیت ساخته شد', $roleCrate);
+       try {
+
+            $roleName = $request->input('name');
+            $roleCrate = Role::create(['name' => $roleName]);
+
+            return $this->respondSuccess('نقش با موفقیت ساخته شد', $roleCrate);
+       } catch (\Throwable $th) {
+            return $this->respondInternalError('خطایی درخ داده است');
+       }
     }
 
     
    public function updateRoleName(UpdateRoleRequest $request)
     {
-        $roleId = $request->input('role_id');
-        $newName = $request->input('name');
+    try {
+            $roleId = $request->input('role_id');
+            $newName = $request->input('name');
 
-        $role = Role::findOrFail($roleId);
-        $role->name = $newName;
-        $role->save();
+            $role = Role::findOrFail($roleId);
+            $role->name = $newName;
+            $role->save();
 
-        return $this->respondSuccess('نام نقش با موفقیت ابدیت شد', $role);
+            return $this->respondSuccess('نام نقش با موفقیت ابدیت شد', $role);
+        } catch (\Throwable $th) {
+            return $this->respondInternalError('{نام نقش باید یونیک باشد}:خطایی درخ داده است');
+        }
     }
   
     
    public function deleteRole($roleId)
     {
-        $role = Role::findOrFail($roleId);
-        $role->delete();
-        return $this->respondSuccess('نقش با موفقیت حذف شد', $role);
+    try {
+
+            $role = Role::findOrFail($roleId);
+            $role->delete();
+
+            return $this->respondSuccess('نقش با موفقیت حذف شد', $role);
+        } catch (\Throwable $th) {
+            return $this->respondInternalError('{اطمینان حاصل کنید ورودی درست است}:خطایی درخ داده است');
+        }
     }
 
 
@@ -78,30 +107,37 @@ class RoleController extends ApiController
 
      public function assignRoleToUser(AssignRoleToUserRequeste $request)
     {
-        $userId = $request->input('user_id');
-        $roleId = $request->input('role_id');
+    try {
+            $userId = $request->input('user_id');
+            $roleId = $request->input('role_id');
 
-        $user = User::findOrFail($userId);
-        $role = Role::findOrFail($roleId);
-        $user->assignRole($role);
+            $user = User::findOrFail($userId);
+            $role = Role::findOrFail($roleId);
+            $user->assignRole($role);
 
-        return $this->respondSuccess('نقش با موفقیت به کاربر مورد نظر اضافه گردید', $user);
+            return $this->respondSuccess('نقش با موفقیت به کاربر مورد نظر اضافه گردید', $role);
+        } catch (\Throwable $th) {
+            return $this->respondInternalError('خطایی درخ داده است');
+        }
     }
 
 
      public function removeRoleFromUser(RemoveRoleFromUserRequest $request)
     {
-        $userId = $request->input('user_id');
-        $roleId = $request->input('role_id');
+        try {
+            $userId = $request->input('user_id');
+            $roleId = $request->input('role_id');
 
-        $user = User::findOrFail($userId);
-        $role = Role::findOrFail($roleId);
+            $user = User::findOrFail($userId);
+            $role = Role::findOrFail($roleId);
 
-        $user->removeRole($role);
+            $user->removeRole($role);
 
-        return response()->json([
-            'message' => 'نقش با موفقیت از کاربر مورد نظر حذف شد',
-            'user' => $user
-        ]);
+        } catch (\Throwable $th) {
+                return $this->respondInternalError('خطایی درخ داده است');
+        }   
     }
 }
+    
+        
+
