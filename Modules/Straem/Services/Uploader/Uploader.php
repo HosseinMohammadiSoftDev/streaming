@@ -5,6 +5,7 @@ namespace Modules\Straem\Services\Uploader;
 use App\Exceptions\FileHasExistsException;
 use Illuminate\Http\Request;
 use Modules\Straem\Entities\File;
+use Modules\Straem\Services\Straem\Video;
 use Modules\Straem\Services\Uploader\FFMpegService;
 
 class Uploader 
@@ -17,8 +18,6 @@ class Uploader
 
     public function __construct(Request $request, StorgeManager $storageManager, FFMpegService $ffmpeg)
     {
-        // dd($request->file);
-        // dd($storageManager);
         $this->request = $request;
         $this->storageManager = $storageManager;
         $this->file = $request->file;
@@ -29,11 +28,12 @@ class Uploader
     public function upload()
     {
 
-        if ($this->isFileExists()) throw new FileHasExistsException('فایل را مجدد نمیتوانید اپلود کنید');
+        // if ($this->isFileExists()) throw new FileHasExistsException('فایل را مجدد نمیتوانید اپلود کنید');
 
-        $this->putFileIntoStorage();
+        $this->putFileIntoStorage(); 
 
         return $this->saveFileIntoDatabase();
+
     }
 
 
@@ -45,9 +45,11 @@ class Uploader
             'type' => $this->getType(),
             'is_private' => $this->isPrivate()
         ]);
+        
+        $this->getStraem($file);
 
         $file->time = $this->getTime($file);
-
+        
         $file->save();
     }
 
@@ -61,14 +63,18 @@ class Uploader
 
 
 
+    private function getStraem(File $file)
+    {
+        if (!$file->isMedia()) return null;
 
+        return $this->ffmpeg->straem($file->absolutePath());
+    }
 
     private function putFileIntoStorage()
     {
         $method = $this->isPrivate() ? 'putFileAsPrivate' : 'putFileAsPublic';
 
-        $this->storageManager->$method($this->file->getClientOriginalName(), $this->file,$this->getType());
-
+        $newFilePath = $this->storageManager->$method($this->file->getClientOriginalName(), $this->file,$this->getType());
     }
 
 

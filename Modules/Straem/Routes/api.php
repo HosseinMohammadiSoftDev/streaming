@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Straem\Http\Controllers\FileController;
+use Modules\Straem\Http\Controllers\InstituteEpisodeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,5 +28,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('download/{file}', [FileController::class, 'show']);
         Route::delete('delete/{file}', [FileController::class, 'delete']);
     });
+
+
+    Route::group(['prefix' => '/straem'], function () {
+        Route::post('', [InstituteEpisodeController::class,'create']);
+    });     
 });
 

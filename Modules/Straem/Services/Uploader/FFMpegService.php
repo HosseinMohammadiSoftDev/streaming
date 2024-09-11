@@ -3,6 +3,7 @@
 namespace Modules\Straem\Services\Uploader;
 
 use FFMpeg\FFProbe;
+use Modules\Straem\Services\Straem\Video;
 
 class FFMpegService
 {
@@ -22,5 +23,11 @@ class FFMpegService
     public function durationOf(string $path)
     {
         return (int) $this->ffprobe->format($path)->get('duration');
+    }
+
+    public function straem(string $path)
+    {
+        $video_class = new Video;
+        $result =  $video_class->convertVideo($path);
     }
 }

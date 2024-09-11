@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Straem\Services\Uploader\StorgeManager;
 
 class File extends Model
-{
+{   
     use HasFactory;
 
 
@@ -16,7 +16,7 @@ class File extends Model
     ];
 
 
-
+    
     public function isMedia()
     {
         return $this->type == 'video';
@@ -30,9 +30,6 @@ class File extends Model
 
     public function download()
     {
-        // dd('mothed download');
-        // dd(resolve(StorgeManager::class)->getFile());
-        // dd($this->is_private);
         return resolve(StorgeManager::class)->getFile($this->name, $this->type, $this->is_private);
     }
 

@@ -14,7 +14,8 @@ class UploadFileRequest extends FormRequest
     public function rules()
     {
         return [               
-            'file' => ['required', 'file', 'mimetypes:image/jpeg,video/mp4,application/zip']
+            'file' => ['required', 'file', 'mimetypes:image/jpeg,video/mp4,application/zip'],
+            'is_private' => ['required', 'in:1,0', 'numeric'],
         ];
     }
 
