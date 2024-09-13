@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Straem\Http\Controllers\FileController;
 use Modules\Straem\Http\Controllers\InstituteEpisodeController;
+use Modules\Straem\Http\Controllers\StraemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,7 @@ use Modules\Straem\Http\Controllers\InstituteEpisodeController;
 |
 */
 
-
-Route::post('/', [FileController::class, 'new']);
-Route::get('download/{file}', [FileController::class, 'show']);
-
+ Route::group(['prefix' => '/straem'], function () {
+        Route::get('/{filename}', [StraemController::class,'show']);
+        Route::get('video/{filename}', [StraemController::class,'stream'])->name('video.stream');
+    }); 

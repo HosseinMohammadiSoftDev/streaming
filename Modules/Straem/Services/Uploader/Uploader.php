@@ -33,6 +33,8 @@ class Uploader
         $this->putFileIntoStorage(); 
 
         return $this->saveFileIntoDatabase();
+        
+        // $this->getFileInHost();
 
     }
 
@@ -44,10 +46,10 @@ class Uploader
             'size' => $this->file->getSize(),
             'type' => $this->getType(),
             'is_private' => $this->isPrivate()
-        ]);
+        ]);     
 
         $this->getStraem($file);
-
+        
         $file->time = $this->getTime($file);
 
         $file->save();
@@ -69,17 +71,18 @@ class Uploader
 
         return $this->ffmpeg->straem($file->absolutePath(), $file->name);
     }
-
+        
     private function putFileIntoStorage()
     {
         $method = $this->isPrivate() ? 'putFileAsPrivate' : 'putFileAsPublic';
 
         $newFilePath = $this->storageManager->$method($this->file->getClientOriginalName(), $this->file,$this->getType());
+        
     }
-
-
+    
     private function isPrivate()
     {
+        
         return $this->request->has('is_private');
     }
 

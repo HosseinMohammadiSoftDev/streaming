@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Modules\Straem\Entities\File;
 use Modules\Straem\Services\Straem\Video;
 use Streaming\FFMpeg;
 // use Streaming\FFMpeg;
@@ -43,9 +44,10 @@ class ConvertVideo implements ShouldQueue
             ->x264()
             ->autoGenerateRepresentations($this->resize)
             ->save(public_path('video/2/' . str_replace(' ', '_', $this->fullName)));
-// dd('test');
 
-        // $video_model = new Video;
+
+        // $video_model = new File;
+        // dd('name');
         // $video_model->video = str_replace(' ', '_', $this->fullName);
         // $video_model->save();
     }

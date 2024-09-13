@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Straem\Http\Controllers\FileController;
 use Modules\Straem\Http\Controllers\InstituteEpisodeController;
+use Modules\Straem\Http\Controllers\StraemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +32,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
 
     Route::group(['prefix' => '/straem'], function () {
-        Route::post('', [InstituteEpisodeController::class,'create']);
+        Route::get('/{filename}', [StraemController::class,'stream']);
     });     
 });
 

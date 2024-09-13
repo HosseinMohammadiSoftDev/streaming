@@ -26,7 +26,9 @@ class FFMpegService
 
     public function straem(string $path, $fileName)
     {
+        
         $video_class = new Video;
+        // dd($video_class);
         $result =  $video_class->convertVideo($path, $fileName);
     }
 }
