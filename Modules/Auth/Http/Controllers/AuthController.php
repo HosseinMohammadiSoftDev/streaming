@@ -14,6 +14,12 @@ use Modules\Auth\Http\Requests\User\RegisterUserRequest;
 
 class AuthController extends ApiController
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['login', 'register']);
+    }
+
+
        public function register(RegisterUserRequest $request)
     {
         $validated = $request->validated();

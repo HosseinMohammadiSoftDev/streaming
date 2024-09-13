@@ -12,20 +12,19 @@ use Modules\Straem\Services\Straem\ConvertVideo;
 class Video
 {
 
-    public function convertVideo($filepath)
+    public function convertVideo($filepath, $fileName)
     {
-        // dd($filepath);
         ini_set('MAX_EXECUTION_TIME', '-1');
         $formats = $this->getVideoFormats($filepath);
-dd($formats);
+
         $resize = [];
         foreach ($formats as $format) {
             array_push($resize, $format['convert']);
         }
 
-        dispatch(new ConvertVideo($filepath, $resize, $episode_title, $episode_id));
-
-        return response()->json(['message' => 'converting'], 200);
+        dispatch(new ConvertVideo($filepath, $resize, $fileName));
+// dd('video class');
+        // return response()->json(['message' => 'converting'], 200);
     }
 
 
@@ -38,7 +37,6 @@ dd($formats);
                 'ffprobe.binaries' => 'C:\\ffmpeg\\ffprobe.exe'
             ]
         );
-// dd($filepath);        
 
         $resoloution = $ffprobe
             ->streams($filepath)

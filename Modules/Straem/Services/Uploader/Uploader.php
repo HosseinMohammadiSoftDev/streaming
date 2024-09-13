@@ -45,11 +45,11 @@ class Uploader
             'type' => $this->getType(),
             'is_private' => $this->isPrivate()
         ]);
-        
+
         $this->getStraem($file);
 
         $file->time = $this->getTime($file);
-        
+
         $file->save();
     }
 
@@ -62,12 +62,12 @@ class Uploader
     }
 
 
-
+            // برسی مدل file isModia // به دلیل داشتن فقط یک تایپ داده
     private function getStraem(File $file)
     {
         if (!$file->isMedia()) return null;
 
-        return $this->ffmpeg->straem($file->absolutePath());
+        return $this->ffmpeg->straem($file->absolutePath(), $file->name);
     }
 
     private function putFileIntoStorage()

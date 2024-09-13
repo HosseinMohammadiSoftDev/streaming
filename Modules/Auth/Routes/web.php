@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Modules\Straem\Http\Controllers\FileController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +14,3 @@
 |
 */
 
-Route::prefix('auth')->group(function() {
-    Route::get('/', 'AuthController@index');
-});

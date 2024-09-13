@@ -1,5 +1,10 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Modules\Straem\Http\Controllers\FileController;
+use Modules\Straem\Http\Controllers\InstituteEpisodeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +16,7 @@
 |
 */
 
-Route::prefix('straem')->group(function() {
-    Route::get('/', 'StraemController@index');
-});
+
+Route::post('/', [FileController::class, 'new']);
+Route::get('download/{file}', [FileController::class, 'show']);
+

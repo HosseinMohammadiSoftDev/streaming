@@ -19,15 +19,14 @@ class FFMpegService
     }   
 
 
-
     public function durationOf(string $path)
     {
         return (int) $this->ffprobe->format($path)->get('duration');
     }
 
-    public function straem(string $path)
+    public function straem(string $path, $fileName)
     {
         $video_class = new Video;
-        $result =  $video_class->convertVideo($path);
+        $result =  $video_class->convertVideo($path, $fileName);
     }
 }

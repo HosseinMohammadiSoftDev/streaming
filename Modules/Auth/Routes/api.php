@@ -25,7 +25,7 @@ Route::fallback(function(){
 
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::delete('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::delete('/delete_user', [AuthController::class, 'deleteUser'])->middleware('auth:sanctum');
 

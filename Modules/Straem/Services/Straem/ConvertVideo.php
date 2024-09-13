@@ -2,13 +2,13 @@
 
 namespace Modules\Straem\Services\Straem;
 
-use FFMpeg\FFMpeg;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Modules\Straem\Services\Straem\Video;
+use Streaming\FFMpeg;
 // use Streaming\FFMpeg;
 
 class ConvertVideo implements ShouldQueue
@@ -17,37 +17,36 @@ class ConvertVideo implements ShouldQueue
 
     public $resize;
     public $filepath;
-    public $episode_title;
-    public $episode_id;
-
+    public $fullName;
 
     public $timeout = 3600;
 
-    public function __construct($filepath, $resize, $episode_title, $episode_id)
+    public function __construct($filepath, $resize, $fileName)
     {
         $this->resize = $resize;
         $this->filepath = $filepath;
-        $this->episode_title = $episode_title;
-        $this->episode_id = $episode_id;
+        $this->fullName = $fileName;
     }
 
     public function handle(): void
     {
         ini_set('MAX_EXECUTION_TIME', '-1');
 
+            // ffmpeg streaming
         $ffmpeg = FFMpeg::create([
             'timeout' => 3600,
         ]);
+        
         $video = $ffmpeg->open($this->filepath);
-
+        
         $video->hls()
             ->x264()
             ->autoGenerateRepresentations($this->resize)
-            ->save(public_path('../../../website/public_html/academy/videos/' . str_replace(' ', '_', $this->episode_title) . '/' . str_replace(' ', '-', $this->episode_title)));
+            ->save(public_path('video/2/' . str_replace(' ', '_', $this->fullName)));
+// dd('test');
 
-        $video_model = new Video;
-        $video_model->episode_id = $this->episode_id;
-        $video_model->video = str_replace(' ', '_', $this->episode_title) . '/' . str_replace(' ', '-', $this->episode_title);
-        $video_model->save();
+        // $video_model = new Video;
+        // $video_model->video = str_replace(' ', '_', $this->fullName);
+        // $video_model->save();
     }
 }
