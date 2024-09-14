@@ -18,16 +18,20 @@ class PermissionController extends ApiController
          // اضافه کردن یک دسترسی به نقش 
     public function assignPermissionsToRole(assignPermissionToRoleRequest $request)
     {
-        $roleId = $request->json('role_id');
-        $permissionIds = $request->json('permission_id');
-        $permissionIds;
-        $role = Role::findOrFail($roleId);
+       try {
+            $roleId = $request->json('role_id');
+            $permissionIds = $request->json('permission_id');
+            $permissionIds;
+            $role = Role::findOrFail($roleId);
 
-        $permissions = Permission::whereIn('id', $permissionIds)->get();
+            $permissions = Permission::whereIn('id', $permissionIds)->get();
 
-        $role->givePermissionTo($permissions);
+            $role->givePermissionTo($permissions);
 
-        return $this->respondSuccess('دسترسی با موفقیت اضافه شد', []); // ست کردن خروجی درست 
+            return $this->respondSuccess('دسترسی با موفقیت اضافه شد', []);
+       } catch (\Throwable $th) {
+            $this->respondInternalError('خطایی زخ داده است');
+       }
     }
 
 

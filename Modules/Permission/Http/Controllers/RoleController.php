@@ -5,6 +5,7 @@ namespace Modules\Permission\Http\Controllers;
 use App\Http\Controllers\Contract\ApiController;
 use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Permission\Entities\Role;
@@ -27,8 +28,10 @@ class RoleController extends ApiController
             $roles = Role::with('permissions')->get();
 
             return $this->respondSuccess('نقش‌ها با موفقیت دریافت شدند.', RoleResource::collection($roles));
-         } catch (\Throwable $th) {
-            return $this->respondInternalError('خطایی درخ داده است');
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound('نقش مورد نظر یافت نشد.');
+        } catch (\Exception $e) {
+            return $this->respondInternalError('اطمینان حاصل کنید ورودی درست است');
         }
     }
     
@@ -41,14 +44,14 @@ class RoleController extends ApiController
 
             return $this->respondSuccess('جزئیات نقش با موفقیت دریافت شد.', new RoleDetailsnResource($role));
         } catch (\Throwable $th) {
-            return $this->respondInternalError('{اطمینان حاصل کنید ورودی درست است}:خطایی درخ داده است');
+            return $this->respondInternalError('{اطمینان حاصل کنید ورودی درست است}');
         }
     }
 
 
     public function getUserRoles($userId)
     { 
-    try {
+        try {
             $user = User::findOrFail($userId);
 
             return $this->respondSuccess('مقام ها و دسترسی ها کاربر با موفقیت پیدا شد.', new UserResource($user));
@@ -84,7 +87,7 @@ class RoleController extends ApiController
 
             return $this->respondSuccess('نام نقش با موفقیت ابدیت شد', $role);
         } catch (\Throwable $th) {
-            return $this->respondInternalError('{نام نقش باید یونیک باشد}:خطایی درخ داده است');
+            return $this->respondInternalError('خطایی درخ داده است');
         }
     }
   
@@ -92,7 +95,6 @@ class RoleController extends ApiController
    public function deleteRole($roleId)
     {
     try {
-
             $role = Role::findOrFail($roleId);
             $role->delete();
 

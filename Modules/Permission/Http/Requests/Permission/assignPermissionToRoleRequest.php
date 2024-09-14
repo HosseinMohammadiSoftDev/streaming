@@ -14,9 +14,9 @@ class assignPermissionToRoleRequest extends FormRequest
     public function rules()
     {
         return [
-           'role_id' => ['required', 'integer'],
+           'role_id' => ['required', 'exists:permissions,id', 'numeric'],
            'permission_id' => ['required', 'array'],
-           'permission_id.*' => ['required', 'exists:permissions,id']
+           'permission_id.*' => ['required', 'exists:permissions,id', 'numeric']
         ];
     }
 

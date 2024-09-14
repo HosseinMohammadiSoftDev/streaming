@@ -14,8 +14,8 @@ class RemoveRoleFromUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|exists:users,id',
-            'role_id' => 'required|exists:roles,id',
+            'user_id' => 'required|exists:users,id|numeric',
+            'role_id' => 'required|exists:roles,id|numeric',
         ];
     }
 
