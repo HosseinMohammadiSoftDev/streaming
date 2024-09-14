@@ -16,7 +16,7 @@ class UserController extends ApiController
 {
    public function index(Request $request)
     {
-        try {
+        try { 
             $paginate = $request->input('paginate') ?? 10;
             $sortColumn = $request->input('sort', 'id');
             $sortDirection = Str::startsWith($sortColumn, '-') ? 'desc' : 'asc';
@@ -43,7 +43,7 @@ class UserController extends ApiController
 
     public function update(UpdateUserRequest $request, $id)
     {        
-        // try {
+        try {
             $validated = $request->validated();
     
             if (Auth::id() != $id) {
@@ -52,17 +52,11 @@ class UserController extends ApiController
     
             $user = User::findOrFail($id);
     
-            if (User::where('email', $validated['email'])->where('id', '!=', $id)->exists()) {
-                return $this->respondInternalError('ایمیل وارد شده قبلاً استفاده شده است');
-            }
-    
             $user->update($validated);
     
             return $this->respondSuccess('کاربر با موفقیت به‌روزرسانی شد', $user);
-        // } catch (ModelNotFoundException $e) {
-        //     return $this->respondNotFound('کاربر مورد نظر برای به‌روزرسانی یافت نشد');
-        // } catch (\Exception $e) {
-        //     return $this->respondInternalError('خطایی در به‌روزرسانی کاربر رخ داده است');
-        // }
+        } catch (\Exception $e) {
+            return $this->respondInternalError('خطایی در به‌روزرسانی کاربر رخ داده است');
+        }
     }
 }

@@ -4,9 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Auth\Http\Controllers\AuthController;
 use Modules\Auth\Http\Controllers\UserController;
-
-
-
+use Modules\Permission\Http\Middleware\CheckPermission;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,11 +30,11 @@ Route::delete('/delete_user', [AuthController::class, 'deleteUser'])->middleware
 // Route::post('/password/email', [PasswordResetController::class, 'sendResetLinkEmail']);
 // Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']);
 
-Route::get('/users', [UserController::class, 'index']);
+Route::get('/users', [UserController::class, 'index'])->middleware('permission:view user information,sanctum');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => '/users'], function () {
-        Route::get('/{id}', [UserController::class, 'show']);
+            Route::get('/{id}', [UserController::class, 'show'])->middleware('permission:view user information,sanctum');
         Route::put('/{id}', [UserController::class, 'update']);
     });
 });

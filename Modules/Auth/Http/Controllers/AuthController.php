@@ -57,7 +57,7 @@ class AuthController extends ApiController
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
-            'password' => 'required|string',
+            'password' => 'required|string','min:6',
         ]);
 
         if ($validator->fails()) {

@@ -44,11 +44,5 @@ class ConvertVideo implements ShouldQueue
             ->x264()
             ->autoGenerateRepresentations($this->resize)
             ->save(public_path('video/2/' . str_replace(' ', '_', $this->fullName)));
-
-
-        // $video_model = new File;
-        // dd('name');
-        // $video_model->video = str_replace(' ', '_', $this->fullName);
-        // $video_model->save();
     }
-}
+} 
