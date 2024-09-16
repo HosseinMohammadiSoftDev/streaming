@@ -23,7 +23,7 @@ Route::fallback(function(){
 });
 
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum', 'permission:role and Permission control,sanctum'], function () {
     Route::group(['prefix' => '/roles'], function () {
         Route::group(['prefix' => '/show'], function () {
             Route::get('/all', [RoleController::class, 'getAllRoles']);
@@ -41,7 +41,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => '/permissions'], function () {  
         Route::get('show-all', [PermissionController::class, 'getAllPermissions']);
-        Route::post('create', [PermissionController::class, 'createPermission']);
         Route::put('update-permission-name', [PermissionController::class, 'updatePermissionName']);
         Route::delete('delete/{permissionID}', [PermissionController::class, 'deletePermission']);
 

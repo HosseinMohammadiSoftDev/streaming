@@ -22,7 +22,7 @@ Route::fallback(function(){
 });
 
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum', 'role:admin,sanctum'], function () {
     Route::group(['prefix' => '/file'], function () {
         Route::get('show-all', [FileController::class, 'index']);
         Route::post('upload', [FileController::class, 'new']);

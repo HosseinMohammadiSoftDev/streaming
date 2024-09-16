@@ -10,6 +10,7 @@ class File extends Model
 {   
     use HasFactory;
 
+    protected $table = 'files';
 
     protected $fillable = [
         'name' , 'size' , 'time' , 'type' , 'is_private'
@@ -40,9 +41,4 @@ class File extends Model
         parent::delete();
 
     }
-    
-    // protected static function newFactory()
-    // {
-    //     return \Modules\Straem\Database\factories\FileFactory::new();
-    // }
 }

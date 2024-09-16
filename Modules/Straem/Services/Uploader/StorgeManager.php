@@ -10,14 +10,22 @@ class StorgeManager
     public function putFileAsPrivate(string $name, UploadedFile $file,string $type)
     {
         return Storage::disk('private')->putFileAs($type, $file, $name);
-
     }
-
+    
     public function putFileAsPublic(string $name, UploadedFile $file,string $type)
     {
         return Storage::disk('public')->putFileAs($type, $file, $name);
     }
+    
+    public function putFileAsHost(string $name, UploadedFile $file,string $type)
+    {
+        return Storage::disk('liara')->putFileAs($type, $file, $name);
+    }
 
+    public function putFileToHost()
+    {
+
+    }
 
     public function getAbsolutePathOf(string $name, string $type, bool $isPrivate)
     {

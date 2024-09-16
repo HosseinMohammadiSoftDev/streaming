@@ -33,7 +33,8 @@ return [
 
     
     'ffmpeg' => [
-        'ffprobe_path' => env('FFPROBE_PATH')
+        'ffprobe_path' => env('FFPROBE_PATH'),
+        'ffmpeg_path' => env('FFMPEG_PATH')
     ]
 
 ];

@@ -16,8 +16,8 @@ use Modules\Straem\Http\Controllers\StraemController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+        // این یک تست است برای نمایش در پلیر video.js
  Route::group(['prefix' => '/straem'], function () {
-        Route::get('/{filename}', [StraemController::class,'show']);
-        Route::get('video/{filename}', [StraemController::class,'stream'])->name('video.stream');
+       //  Route::get('/{filename}', [StraemController::class,'show']); // برسی شود.
+        Route::get('{filename}', [StraemController::class,'stream'])->name('video.stream');
     }); 

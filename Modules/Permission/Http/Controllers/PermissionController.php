@@ -38,19 +38,23 @@ class PermissionController extends ApiController
         // حذف یک دسترسی از نقش
     public function removePermissionFromRole(RemovePermissionFromRoleRequest $request)
     {
-        $roleId = $request->input('role_id');
-        $permissionId = $request->input('permission_id');
+        try {
+            $roleId = $request->input('role_id');
+            $permissionId = $request->input('permission_id');
 
-        $role = Role::findOrFail($roleId);
-        $permission = Permission::findOrFail($permissionId);
+            $role = Role::findOrFail($roleId);
+            $permission = Permission::findOrFail($permissionId);
 
-        $role->revokePermissionTo($permission);
+            $role->revokePermissionTo($permission);
 
-        return response()->json([
-            'message' => 'دسترسی با موفقیت از نقش مورد نظر پاک شد',
-            'role' => $role,
-            'permission' => $permission
-        ]);
+            return response()->json([
+                'message' => 'دسترسی با موفقیت از نقش مورد نظر پاک شد',
+                'role' => $role,
+                'permission' => $permission
+            ]);
+        } catch (\Throwable $th) {
+            $this->respondInternalError('خطایی رخ داده است');
+        }
     }
 
 

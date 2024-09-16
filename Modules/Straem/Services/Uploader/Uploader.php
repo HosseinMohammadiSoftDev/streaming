@@ -4,6 +4,8 @@ namespace Modules\Straem\Services\Uploader;
 
 use App\Exceptions\FileHasExistsException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Modules\Straem\Entities\File;
 use Modules\Straem\Services\Straem\Video;
 use Modules\Straem\Services\Uploader\FFMpegService;
@@ -30,11 +32,13 @@ class Uploader
 
         // if ($this->isFileExists()) throw new FileHasExistsException('فایل را مجدد نمیتوانید اپلود کنید');
 
-        $this->putFileIntoStorage(); 
+                // اگر قصد ذخیره فایل در دارکتوری storage دارید :).
+        // $this->putFileIntoStorage(); 
+
+                // اگر قصد دارید در هاست اپلود کنید
+        $this->putFileInToHost();
 
         return $this->saveFileIntoDatabase();
-        
-        // $this->getFileInHost();
 
     }
 
@@ -78,6 +82,11 @@ class Uploader
 
         $newFilePath = $this->storageManager->$method($this->file->getClientOriginalName(), $this->file,$this->getType());
         
+    }
+
+    private function putFileInToHost()
+    {
+        $this->storageManager->putFileAsHost($this->file->getClientOriginalName(), $this->file, $this->getType());
     }
     
     private function isPrivate()

@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 use Modules\Straem\Entities\File;
 use Modules\Straem\Services\Straem\Video;
 use Streaming\FFMpeg;
@@ -32,7 +33,7 @@ class ConvertVideo implements ShouldQueue
     public function handle(): void
     {
         ini_set('MAX_EXECUTION_TIME', '-1');
-
+dd('tst');
             // ffmpeg streaming
         $ffmpeg = FFMpeg::create([
             'timeout' => 3600,
@@ -43,6 +44,13 @@ class ConvertVideo implements ShouldQueue
         $video->hls()
             ->x264()
             ->autoGenerateRepresentations($this->resize)
-            ->save(public_path('video/2/' . str_replace(' ', '_', $this->fullName)));
-    }
+            ->save(public_path('/tmp/' . str_replace(' ', '_', $this->fullName)));
+
+
+        $fileContent = file_get_contents('/tmp/' . str_replace(' ', '_', $this->fullName));
+        Storage::disk('liara')->put('video/' . str_replace(' ', '_', $this->fullName), $fileContent);
+
+        // حذف فایل موقت
+        unlink('/tmp/' . str_replace(' ', '_', $this->fullName));
+    }   
 } 

@@ -33,8 +33,8 @@ class Video
 
         $ffprobe = FFProbe::create(
             [
-                'ffmpeg.binaries' => 'C:\\ffmpeg\\ffprobe.exe',
-                'ffprobe.binaries' => 'C:\\ffmpeg\\ffprobe.exe'
+            'ffprobe.binaries' => config(key: 'services.ffmpeg.ffprobe_path'),
+            'ffmpeg.binaries' => config(key: 'services.ffmpeg.ffmpeg_path')
             ]
         );
 

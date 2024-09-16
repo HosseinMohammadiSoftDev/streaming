@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\S3Controller;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------

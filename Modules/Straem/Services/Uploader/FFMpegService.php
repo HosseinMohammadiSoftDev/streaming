@@ -13,8 +13,8 @@ class FFMpegService
     public function __construct()
     {
         $this->ffprobe = FFProbe::create([
-            // 'ffprobe.binaries' => config('serivces.ffmpeg.ffprobe_path')
-            'ffprobe.binaries' => "C:\\ffmpeg\\ffprobe.exe"
+            'ffprobe.binaries' => config('services.ffmpeg.ffprobe_path')
+            // 'ffprobe.binaries' => "C:\\ffmpeg\\ffprobe.exe"
         ]);
     }   
 
@@ -28,7 +28,7 @@ class FFMpegService
     {
         
         $video_class = new Video;
-        // dd($video_class);
+    
         $result =  $video_class->convertVideo($path, $fileName);
     }
 }

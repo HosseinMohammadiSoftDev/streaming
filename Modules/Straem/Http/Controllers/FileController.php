@@ -31,7 +31,6 @@ class FileController extends ApiController
 
     public function show(File $file)
     {
-        // dd('donwload');
         return $file->download();
     }
 
@@ -44,15 +43,11 @@ class FileController extends ApiController
 
     public function new(FileUploadFileRequest $request)
     {
-        // try{
             $request->validated();
 
             $this->uploader->upload();
 
             return $this->respondSuccess('فایل با موفقیت اپلود شد', []);
-        // }catch(\Exception $e){
-        //     return $this->respondInternalError('در مسیر به مشکلی بر خوردیم');
-        // }
     }
 
 }
