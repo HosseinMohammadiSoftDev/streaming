@@ -30,7 +30,7 @@ Route::group(['middleware' => 'auth:sanctum', 'role:admin,sanctum'], function ()
         Route::delete('delete/{file}', [FileController::class, 'delete']);
     });
 
-
+    
     Route::group(['prefix' => '/straem'], function () {
         Route::get('/{filename}', [StraemController::class,'stream']);
     });     

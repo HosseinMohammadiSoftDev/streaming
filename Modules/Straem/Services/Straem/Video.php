@@ -7,12 +7,13 @@ use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
 use FFMpeg\Filters\Video\ResizeFilter;
 use FFMpeg\Format\Video\X264;
+use Illuminate\Support\Facades\Storage;
 use Modules\Straem\Services\Straem\ConvertVideo;
 
 class Video
 {
 
-    public function convertVideo($filepath, $fileName)
+    public function convertVideoInLoacal($filepath, $fileName)
     {
         ini_set('MAX_EXECUTION_TIME', '-1');
         $formats = $this->getVideoFormats($filepath);
@@ -23,8 +24,7 @@ class Video
         }
 
         dispatch(new ConvertVideo($filepath, $resize, $fileName));
-// dd('video class');
-        // return response()->json(['message' => 'converting'], 200);
+
     }
 
 
@@ -151,6 +151,7 @@ class Video
 
     public function convertToResoloution($filepath, $format)
     {
+        dd('con');
         $uuid = uniqid();
         $generated_video_name = "{$uuid}-{$format['resoloution']}.mp4";
 

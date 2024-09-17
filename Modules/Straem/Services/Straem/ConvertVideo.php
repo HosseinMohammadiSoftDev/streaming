@@ -7,15 +7,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Modules\Straem\Entities\File;
 use Modules\Straem\Services\Straem\Video;
 use Streaming\FFMpeg;
-// use Streaming\FFMpeg;
+use Streaming\Stream;
 
-class ConvertVideo implements ShouldQueue
+class ConvertVideo 
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    // implements ShouldQueue
+   /* use Dispatchable, InteractsWithQueue, Queueable, SerializesModels; */
 
     public $resize;
     public $filepath;
@@ -30,27 +32,29 @@ class ConvertVideo implements ShouldQueue
         $this->fullName = $fileName;
     }
 
-    public function handle(): void
+    public function handle()
     {
         ini_set('MAX_EXECUTION_TIME', '-1');
-dd('tst');
+
             // ffmpeg streaming
         $ffmpeg = FFMpeg::create([
             'timeout' => 3600,
         ]);
-        
+
         $video = $ffmpeg->open($this->filepath);
-        
+        $tempDir =  public_path('temp/' . str_replace(' ', '_', pathinfo($this->fullName, PATHINFO_FILENAME)));
+
+
         $video->hls()
             ->x264()
             ->autoGenerateRepresentations($this->resize)
-            ->save(public_path('/tmp/' . str_replace(' ', '_', $this->fullName)));
+            ->save($tempDir . '/playlist.m3u8');
 
+         $files = glob($tempDir . '/*'); // دریافت همه فایل‌ها از پوشه موقت
 
-        $fileContent = file_get_contents('/tmp/' . str_replace(' ', '_', $this->fullName));
-        Storage::disk('liara')->put('video/' . str_replace(' ', '_', $this->fullName), $fileContent);
-
-        // حذف فایل موقت
-        unlink('/tmp/' . str_replace(' ', '_', $this->fullName));
+        foreach ($files as $file) {
+            // $relativePath = 'stream/' . basename($file);
+            // Storage::disk('liara')->put($relativePath, file_get_contents($file));
+        }
     }   
 } 

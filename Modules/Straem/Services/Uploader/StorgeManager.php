@@ -2,8 +2,10 @@
 
 namespace Modules\Straem\Services\Uploader;
 
+use GuzzleHttp\Client;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+
 
 class StorgeManager 
 { 
@@ -18,7 +20,7 @@ class StorgeManager
     }
     
     public function putFileAsHost(string $name, UploadedFile $file,string $type)
-    {
+    {  
         return Storage::disk('liara')->putFileAs($type, $file, $name);
     }
 

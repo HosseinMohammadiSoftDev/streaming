@@ -4,6 +4,7 @@ namespace Modules\Straem\Services\Uploader;
 
 use App\Exceptions\FileHasExistsException;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Modules\Straem\Entities\File;
@@ -37,7 +38,7 @@ class Uploader
 
                 // اگر قصد دارید در هاست اپلود کنید
         $this->putFileInToHost();
-
+                
         return $this->saveFileIntoDatabase();
 
     }
@@ -50,10 +51,10 @@ class Uploader
             'size' => $this->file->getSize(),
             'type' => $this->getType(),
             'is_private' => $this->isPrivate()
-        ]);     
+        ]);
 
-        $this->getStraem($file);
-        
+        $this->getStraemInHost($file);
+
         $file->time = $this->getTime($file);
 
         $file->save();
@@ -68,16 +69,27 @@ class Uploader
     }
 
 
-            // برسی مدل file isModia // به دلیل داشتن فقط یک تایپ داده
-    private function getStraem(File $file)
+    private function getStraemInLocal(File $file)
     {
         if (!$file->isMedia()) return null;
 
-        return $this->ffmpeg->straem($file->absolutePath(), $file->name);
+        return $this->ffmpeg->straemInLocal($file->absolutePath(), $file->name);
     }
         
+    
+    private function getStraemInHost($file)
+    {
+        if (!$file->isMedia()) return null;
+
+        $preSignedUrl = $this->getPreSignedUrl($file->name);
+
+        return $this->ffmpeg->straemInHost($preSignedUrl);
+    }
+
+
     private function putFileIntoStorage()
     {
+        
         $method = $this->isPrivate() ? 'putFileAsPrivate' : 'putFileAsPublic';
 
         $newFilePath = $this->storageManager->$method($this->file->getClientOriginalName(), $this->file,$this->getType());
@@ -91,8 +103,7 @@ class Uploader
     
     private function isPrivate()
     {
-        
-        return $this->request->has('is_private');
+        return $this->request->is_private;
     }
 
     private function getType()
@@ -107,6 +118,16 @@ class Uploader
     private function isFileExists()
     {
        return $this->storageManager->isFileExists($this->file->getClientOriginalName(), $this->getType(), $this->isPrivate());
+    }
+
+    public function getPreSignedUrl($fileName)
+    {
+        $disk = Storage::disk('liara'); 
+        $expiry = now()->addMinutes(10);
+
+        $url = $disk->temporaryUrl('video/' . $fileName, $expiry);
+
+        return $url;
     }
 
 

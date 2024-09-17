@@ -15,7 +15,7 @@ class UploadFileRequest extends FormRequest
     {
         return [               
             'file' => ['required', 'file', 'mimetypes:image/jpeg,video/mp4,application/zip'],
-            'is_private' => ['required', 'in:1,0', 'numeric'],
+            'is_private' => ['nullable', 'in:0,1', 'numeric'],
         ];
     }
 

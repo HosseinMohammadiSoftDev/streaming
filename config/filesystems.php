@@ -61,7 +61,7 @@ return [
             'throw' => false,
         ],
 
-       'liara' => [
+      'liara' => [
             'driver' => 's3',
             'endpoint' => env('ENDPOINT_URL'),
             'key' => env('ACCESS_KEY'),
@@ -69,7 +69,6 @@ return [
             'region' => env('DEFAULT_REGION'),
             'bucket' => env('BUCKET_NAME'),
         ]
-
     ],
 
     /*

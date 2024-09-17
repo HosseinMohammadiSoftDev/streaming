@@ -24,11 +24,32 @@ class FFMpegService
         return (int) $this->ffprobe->format($path)->get('duration');
     }
 
-    public function straem(string $path, $fileName)
+    public function straemInLocal(string $path, $fileName)
     {
-        
         $video_class = new Video;
-    
-        $result =  $video_class->convertVideo($path, $fileName);
+
+        $result =  $video_class->convertVideoInLoacal($path, $fileName);
     }
+
+     public function straemInHost($url)
+    {
+         $video_class = new Video;
+
+        $fileContent = file_get_contents($url);
+
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'video_');
+
+        file_put_contents($tempFilePath, $fileContent);
+
+        $fileName = basename($url); 
+
+        $result = $video_class->convertVideoInLoacal($tempFilePath, $fileName);
+
+        unlink($tempFilePath);
+
+        return $result;       
+
+    }
+
+
 }
