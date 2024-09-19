@@ -22,17 +22,12 @@ Route::fallback(function(){
 });
 
 
-Route::group(['middleware' => 'auth:sanctum', 'role:admin,sanctum'], function () {
+Route::group(['middleware' => ['auth:sanctum', 'role:admin'] ], function () {
     Route::group(['prefix' => '/file'], function () {
         Route::get('show-all', [FileController::class, 'index']);
         Route::post('upload', [FileController::class, 'new']);
         Route::get('download/{file}', [FileController::class, 'show']);
         Route::delete('delete/{file}', [FileController::class, 'delete']);
-    });
-
-    
-    Route::group(['prefix' => '/straem'], function () {
-        Route::get('/{filename}', [StraemController::class,'stream']);
-    });     
+    });   
 });
 

@@ -23,7 +23,7 @@ Route::fallback(function(){
 });
 
 
-Route::group(['middleware' => 'auth:sanctum', 'permission:role and Permission control | ,sanctum'], function () {
+Route::group(['middleware' => ['auth:sanctum', 'role:admin,sanctum']], function () {
     Route::group(['prefix' => '/roles'], function () {
         Route::group(['prefix' => '/show'], function () {
             Route::get('/all', [RoleController::class, 'getAllRoles']);
