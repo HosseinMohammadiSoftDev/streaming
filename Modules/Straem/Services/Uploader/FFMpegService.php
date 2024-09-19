@@ -28,7 +28,7 @@ class FFMpegService
     {
         $video_class = new Video;
 
-        $result =  $video_class->convertVideoInLoacal($path, $fileName);
+        $result =  $video_class->convertVideo($path, $fileName);
     }
 
      public function straemInHost($url)
@@ -43,7 +43,7 @@ class FFMpegService
 
         $fileName = basename($url); 
 
-        $result = $video_class->convertVideoInLoacal($tempFilePath, $fileName);
+        $result = $video_class->convertVideo($tempFilePath, $fileName);
 
         unlink($tempFilePath);
 

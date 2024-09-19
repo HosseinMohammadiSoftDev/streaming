@@ -42,19 +42,50 @@ class ConvertVideo
         ]);
 
         $video = $ffmpeg->open($this->filepath);
-        $tempDir =  public_path('temp/' . str_replace(' ', '_', pathinfo($this->fullName, PATHINFO_FILENAME)));
 
+        $tempDir = public_path('temp/' . str_replace(' ', '_', pathinfo($this->fullName, PATHINFO_FILENAME)));
 
         $video->hls()
             ->x264()
             ->autoGenerateRepresentations($this->resize)
-            ->save($tempDir . '/playlist.m3u8');
+            ->save($tempDir . '/playlist.m3u8'
+                // '-hls_key_info_file' => public_path('key_info_file.txt'), // Specify the key info file
+                // '-hls_time' => 10,
+                // '-hls_playlist_type' => 'vod',
+                // '-hls_segment_filename' => $tempDir . '/segment_%03d.ts'
+            );
 
-         $files = glob($tempDir . '/*'); // دریافت همه فایل‌ها از پوشه موقت
+        $files = glob($tempDir . '/*');
+            
+        foreach ($files as $file) {
+            $relativePath = 'stream/' . basename($file);
+            
+            $content = file_get_contents($file);
+            Storage::disk('liara')->put($relativePath, $content);
+        }
+
+        $this->deleteDirectory($tempDir);
+
+    }
+
+    private function deleteDirectory($dir)
+    {
+        if (!file_exists($dir)) {
+            return;
+        }
+
+        if (!is_dir($dir)) {
+            unlink($dir);
+            return;
+        }
+
+        $files = array_diff(scandir($dir), ['.', '..']);
 
         foreach ($files as $file) {
-            // $relativePath = 'stream/' . basename($file);
-            // Storage::disk('liara')->put($relativePath, file_get_contents($file));
+            $this->deleteDirectory("$dir/$file");
         }
-    }   
+
+        rmdir($dir);
+    }
+
 } 

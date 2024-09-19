@@ -13,7 +13,7 @@ use Modules\Straem\Services\Straem\ConvertVideo;
 class Video
 {
 
-    public function convertVideoInLoacal($filepath, $fileName)
+    public function convertVideo($filepath, $fileName)
     {
         ini_set('MAX_EXECUTION_TIME', '-1');
         $formats = $this->getVideoFormats($filepath);
@@ -151,7 +151,6 @@ class Video
 
     public function convertToResoloution($filepath, $format)
     {
-        dd('con');
         $uuid = uniqid();
         $generated_video_name = "{$uuid}-{$format['resoloution']}.mp4";
 

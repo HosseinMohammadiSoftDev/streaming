@@ -53,9 +53,9 @@ class Uploader
             'is_private' => $this->isPrivate()
         ]);
 
+        // $file->time = $this->getTime($file);
+        
         $this->getStraemInHost($file);
-
-        $file->time = $this->getTime($file);
 
         $file->save();
     }
@@ -65,7 +65,13 @@ class Uploader
     {
         if (!$file->isMedia()) return null;
 
-        return $this->ffmpeg->durationOf($file->absolutePath());
+        $filePath = $file->absolutePath();
+    
+        if (!file_exists($filePath)) {
+            throw new \Exception("File does not exist: " . $filePath);
+        }
+    
+        return $this->ffmpeg->durationOf($filePath);
     }
 
 

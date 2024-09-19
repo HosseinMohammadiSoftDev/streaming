@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +18,6 @@ use Modules\Straem\Http\Controllers\StraemController;
 */
         // این یک تست است برای نمایش در پلیر video.js
  Route::group(['prefix' => '/straem'], function () {
-       //  Route::get('/{filename}', [StraemController::class,'show']); // برسی شود.
-        Route::get('{filename}', [StraemController::class,'stream'])->name('video.stream');
+        Route::get('/show/{filename}', [StraemController::class,'show']); // برسی شود.
+        Route::get('/{filename}', [StraemController::class,'stream'])->name('video.stream');
     }); 

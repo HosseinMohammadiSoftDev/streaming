@@ -6,48 +6,45 @@ use App\Http\Controllers\Contract\ApiController;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StraemController extends ApiController
-{
-      public function show($filename)
-    {
-        $path = public_path("video/{$filename}");
+{ 
+    public function show($videoId)
+    {       
+        $videoPath = "stream/{$videoId}";
+        $url = Storage::disk('liara')->temporaryUrl($videoPath, now()->addMinutes(60));
+        // $url = Storage::disk('liara')->get($videoPath);
+// dd($url);
+        return view('straem::index', compact('url'));
 
-        if (!file_exists($path)) {
+    }
+
+    public function stream($filename)
+    {
+        $disk = Storage::disk('liara'); // استفاده از دیسک پیکربندی‌شده در config/filesystems.php
+        $filePath = 'stream/' . $filename; // مسیر فایل در هاست دانلود
+
+        if (!$disk->exists($filePath)) {
             abort(404, "Video file not found.");
         }
 
-        return view('straem::index', ['filename' => $filename]);
+        $stream = function () use ($disk, $filePath) {
+            $stream = $disk->getDriver()->readStream($filePath);
+            if ($stream) {
+                fpassthru($stream);
+                fclose($stream);
+            }
+        };
+
+        $response = new StreamedResponse($stream);
+    
+        $response->headers->set('Content-Disposition', 'inline; filename="' . $filename . '"');
+        $response->headers->set('Content-Type', $disk->mimeType($filePath));
+        $response->headers->set('Content-Transfer-Encoding', 'inline');
+
+        // dd($response);
+        return $response;
     }
-
-     public function stream($filename)
-    {
-        $url = asset('video/' . $filename); // اگر از مسیر public استفاده می‌کنید
-        return view('straem::index', ['url' => $url]);
-    }
-
-//     public function stream($filename)
-//     {
-//            $path = public_path("video/{$filename}");
-// // dd($filename);
-//            if (!file_exists($path)) {
-//               abort(404, "Video file not found.");
-//             }
-
-//         $stream = function () use ($path) {
-//             $stream = fopen($path, 'rb');
-//             while (!feof($stream)) {
-//                 echo fread($stream, 1024 * 8);
-//                 ob_flush();
-//                 flush();
-//             }
-//             fclose($stream);
-//         };
-
-//         return response()->stream($stream, 200, [
-//             "Content-Type" => "video/mp4",
-//             "Content-Length" => filesize($path),
-//             "Content-Disposition" => "inline; filename='{$filename}'"
-//         ]);
-//     }
 }
