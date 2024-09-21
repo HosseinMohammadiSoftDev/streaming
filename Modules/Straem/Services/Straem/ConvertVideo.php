@@ -14,10 +14,9 @@ use Modules\Straem\Services\Straem\Video;
 use Streaming\FFMpeg;
 use Streaming\Stream;
 
-class ConvertVideo 
+class ConvertVideo implements ShouldQueue
 {
-    // implements ShouldQueue
-   /* use Dispatchable, InteractsWithQueue, Queueable, SerializesModels; */
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $resize;
     public $filepath;
@@ -43,13 +42,16 @@ class ConvertVideo
 
         $video = $ffmpeg->open($this->filepath);
 
-        $tempDir = public_path('temp/' . str_replace(' ', '_', pathinfo($this->fullName, PATHINFO_FILENAME)));
+        $fileName = str_replace(' ', '_', $this->fullName);
+
+        $tempDir = public_path('temp');
 
         $video->hls()
             ->x264()
             ->autoGenerateRepresentations($this->resize)
-            ->save($tempDir . '/playlist.m3u8'
-                // '-hls_key_info_file' => public_path('key_info_file.txt'), // Specify the key info file
+      ->save($tempDir . $fileName
+            // رمز نگاری AES-128 
+                // '-hls_key_info_file' => public_path('key_info_file.txt'),
                 // '-hls_time' => 10,
                 // '-hls_playlist_type' => 'vod',
                 // '-hls_segment_filename' => $tempDir . '/segment_%03d.ts'
@@ -59,7 +61,7 @@ class ConvertVideo
             
         foreach ($files as $file) {
             $relativePath = 'stream/' . basename($file);
-            
+
             $content = file_get_contents($file);
             Storage::disk('liara')->put($relativePath, $content);
         }

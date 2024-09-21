@@ -8,6 +8,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Modules\Straem\Entities\File;
+use Modules\Straem\Jobs\Storage\PutFileAsHost;
+use Modules\Straem\Jobs\Storage\StoreFile;
 use Modules\Straem\Services\Straem\Video;
 use Modules\Straem\Services\Uploader\FFMpegService;
 
@@ -33,12 +35,10 @@ class Uploader
 
         // if ($this->isFileExists()) throw new FileHasExistsException('فایل را مجدد نمیتوانید اپلود کنید');
 
-                // اگر قصد ذخیره فایل در دارکتوری storage دارید :).
         // $this->putFileIntoStorage(); 
 
-                // اگر قصد دارید در هاست اپلود کنید
         $this->putFileInToHost();
-                
+
         return $this->saveFileIntoDatabase();
 
     }
@@ -89,22 +89,26 @@ class Uploader
 
         $preSignedUrl = $this->getPreSignedUrl($file->name);
 
-        return $this->ffmpeg->straemInHost($preSignedUrl);
+        return $this->ffmpeg->straemInHost($preSignedUrl, $file);
     }
 
 
     private function putFileIntoStorage()
     {
-        
         $method = $this->isPrivate() ? 'putFileAsPrivate' : 'putFileAsPublic';
 
         $newFilePath = $this->storageManager->$method($this->file->getClientOriginalName(), $this->file,$this->getType());
-        
     }
 
     private function putFileInToHost()
     {
-        $this->storageManager->putFileAsHost($this->file->getClientOriginalName(), $this->file, $this->getType());
+        // $this->storageManager->putFileAsHost($this->file->getClientOriginalName(), $this->file, $this->getType());
+
+        $filePath = $this->file->getRealPath();
+        $tempFileCopy = tempnam(sys_get_temp_dir(), 'copy_');
+        copy($filePath, $tempFileCopy);
+
+        StoreFile::dispatch('putFileAsHost', [$this->file->getClientOriginalName(), $tempFileCopy, $this->getType()]);
     }
     
     private function isPrivate()
@@ -132,7 +136,7 @@ class Uploader
         $expiry = now()->addMinutes(10);
 
         $url = $disk->temporaryUrl('video/' . $fileName, $expiry);
-
+dd($fileName);
         return $url;
     }
 

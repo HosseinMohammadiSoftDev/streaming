@@ -31,17 +31,17 @@ class FFMpegService
         $result =  $video_class->convertVideo($path, $fileName);
     }
 
-     public function straemInHost($url)
+     public function straemInHost($url, $file)
     {
          $video_class = new Video;
-
+    
         $fileContent = file_get_contents($url);
 
         $tempFilePath = tempnam(sys_get_temp_dir(), 'video_');
 
         file_put_contents($tempFilePath, $fileContent);
 
-        $fileName = basename($url); 
+        $fileName = $file->name; 
 
         $result = $video_class->convertVideo($tempFilePath, $fileName);
 
