@@ -23,7 +23,10 @@ class Video
             array_push($resize, $format['convert']);
         }
 
-        dispatch(new ConvertVideo($filepath, $resize, $fileName));
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'video_');
+        copy($filepath, $tempFilePath);
+
+        dispatch(new ConvertVideo($tempFilePath, $resize, $fileName));
 
     }
 

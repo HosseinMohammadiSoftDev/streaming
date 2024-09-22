@@ -2,8 +2,10 @@
 
 namespace Modules\Straem\Services\Uploader;
 
+use Exception;
 use FFMpeg\FFProbe;
 use Modules\Straem\Services\Straem\Video;
+use Streaming\Exception\Exception as ExceptionException;
 
 class FFMpegService
 {

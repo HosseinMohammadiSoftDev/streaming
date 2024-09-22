@@ -35,8 +35,7 @@ class StorgeManager implements ShouldQueue
     {   
         // return Storage::disk('liara')->putFileAs($type, $file, $name);
    
-        $newName = str_replace(' ', '_', $name);
-        return Storage::disk('liara')->put($this->directoryPrefix($type, $newName), $fileContent);
+        return Storage::disk('liara')->put($this->directoryPrefix($type, $name), $fileContent);
     }
 
     public function getAbsolutePathOf(string $name, string $type, bool $isPrivate)

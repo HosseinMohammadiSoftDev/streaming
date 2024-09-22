@@ -44,7 +44,7 @@ class ConvertVideo implements ShouldQueue
 
         $fileName = str_replace(' ', '_', $this->fullName);
 
-        $tempDir = public_path('temp');
+        $tempDir = public_path('temp/');
 
         $video->hls()
             ->x264()

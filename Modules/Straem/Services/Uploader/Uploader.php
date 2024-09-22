@@ -82,12 +82,16 @@ class Uploader
         return $this->ffmpeg->straemInLocal($file->absolutePath(), $file->name);
     }
         
-    
+
     private function getStraemInHost($file)
     {
         if (!$file->isMedia()) return null;
 
         $preSignedUrl = $this->getPreSignedUrl($file->name);
+    
+        // $filePath = $this->file->getRealPath();
+        // $tempFileCopy = tempnam(sys_get_temp_dir(), 'copy_');
+        // copy($filePath, $tempFileCopy);
 
         return $this->ffmpeg->straemInHost($preSignedUrl, $file);
     }
@@ -134,9 +138,11 @@ class Uploader
     {
         $disk = Storage::disk('liara'); 
         $expiry = now()->addMinutes(10);
+    
+        // $newName = str_replace(' ', '_', $fileName);
 
         $url = $disk->temporaryUrl('video/' . $fileName, $expiry);
-dd($fileName);
+
         return $url;
     }
 
